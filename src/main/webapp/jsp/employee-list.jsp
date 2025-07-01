@@ -3,21 +3,27 @@
 <html>
 <head>
     <title>Employee Management</title>
-    <link rel="stylesheet" href="../css/styles.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="../js/employee.js"></script>
+    <script src="${pageContext.request.contextPath}/js/employee.js"></script>
+    <script>
+        const basePath = '<%=request.getContextPath()%>';
+    </script>
 </head>
 
 <body>
 <div class="container mt-4">
     <h2>Employee Management</h2>
 
-    <div class="mb-3">
-        <button class="btn btn-success" id="addBtn">Add</button>
-        <button class="btn btn-primary" id="updateBtn">Update</button>
-        <button class="btn btn-danger" id="deleteBtn">Delete</button>
+    <div class="mb-3 d-flex justify-content-between">
+        <div>
+            <button class="btn btn-success" id="addBtn">Add</button>
+            <button class="btn btn-primary" id="updateBtn">Update</button>
+            <button class="btn btn-danger" id="deleteBtn">Delete</button>
+        </div>
+        <a href="${pageContext.request.contextPath}/jsp/employee-list-dwr.jsp">DWR</a>
     </div>
 
     <table class="employee-table table table-bordered table-hover">

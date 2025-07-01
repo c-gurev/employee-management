@@ -78,17 +78,18 @@ public class EmployeeDAO {
         }
     }
 
-    public EmployeePage getEmployees(int pageNumber, int pageSize, String sortColumn, String sortDirection) throws SQLException {
-        logger.info("Retrieving employee records: page #{}, page size {}, sorting  by {}, {}", pageNumber, pageSize, sortColumn, sortDirection);
+    public EmployeePage getEmployees(PaginationInfo paginationInfo) throws SQLException {
+        logger.info("Retrieving employee records: page #{}, page size {}, sorting  by {}, {}",
+                paginationInfo.getPageNumber(), paginationInfo.getPageSize(), paginationInfo.getSortColumn(), paginationInfo.getSortDirection());
         List<EmployeeDTO> employees = new ArrayList<>();
         int totalCount;
         String sql = "{call EMPLOYMENT_MODULE.GET_EMPLOYEES(?, ?, ?, ?, ?, ?)}";
         try (Connection connection = dataSource.getConnection();
              CallableStatement stmt = connection.prepareCall(sql)) {
-            stmt.setInt(1, pageNumber);
-            stmt.setInt(2, pageSize);
-            stmt.setString(3, sortColumn);
-            stmt.setString(4, sortDirection);
+            stmt.setInt(1, paginationInfo.getPageNumber());
+            stmt.setInt(2, paginationInfo.getPageSize());
+            stmt.setString(3, paginationInfo.getSortColumn());
+            stmt.setString(4, paginationInfo.getSortDirection());
             stmt.registerOutParameter(5, Types.REF_CURSOR);
             stmt.registerOutParameter(6, Types.INTEGER);
             stmt.execute();
@@ -107,8 +108,7 @@ public class EmployeeDAO {
                 }
             }
         }
-        PaginationInfo pageInfo = new PaginationInfo(pageNumber, pageSize, sortColumn, sortDirection);
-        return new EmployeePage(employees, pageInfo, totalCount);
+        return new EmployeePage(employees, paginationInfo, totalCount);
     }
 
     public boolean checkEmailExists(String email, Integer employeeId) throws SQLException {

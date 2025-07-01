@@ -2,10 +2,8 @@ package com.employee.management.servlet;
 
 import com.employee.management.dao.EmployeeDAO;
 import com.employee.management.dto.EmployeeDTO;
+import com.employee.management.validation.EmployeeRecordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -37,7 +37,7 @@ class AddEmployeeServletSimpleTest {
     EmployeeDAO employeeDAO;
 
     @Mock
-    Validator validator;
+    EmployeeRecordValidator validationService;
 
     HttpServletRequest request;
     HttpServletResponse response;
@@ -58,7 +58,7 @@ class AddEmployeeServletSimpleTest {
         BufferedReader reader = new BufferedReader(new StringReader(json));
         when(request.getReader()).thenReturn(reader);
         doReturn(dto).when(mapper).readValue(eq(reader), eq(EmployeeDTO.class));
-        when(validator.validate(dto)).thenReturn(Collections.emptySet());
+        when(validationService.getValidationErrors(dto)).thenReturn(Collections.emptyMap());
         when(employeeDAO.addEmployee(dto)).thenReturn(true);
 
         servlet.doPost(request, response);

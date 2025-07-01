@@ -37,7 +37,13 @@ public class PaginationInfo {
     }
 
     public String getSortColumn() {
-        return sortColumn;
+        return switch (sortColumn) {
+            case "name" -> "NAME";
+            case "email" -> "EMAIL";
+            case "phone" -> "PHONE_NUMBER";
+            case "dateOfJoining" -> "DATE_OF_JOINING";
+            default -> "EMPLOYEE_ID";
+        };
     }
 
     public void setSortColumn(String sortColumn) {
@@ -45,6 +51,9 @@ public class PaginationInfo {
     }
 
     public String getSortDirection() {
+        if (sortDirection == null || sortDirection.isBlank()) {
+            return "asc";
+        }
         return sortDirection;
     }
 

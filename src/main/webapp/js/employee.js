@@ -43,7 +43,7 @@ $(document).ready(function () {
         if (!confirm(`Delete ${ids.length} employee(s)?`)) return;
 
         $.ajax({
-            url: "../delete-employee",
+            url: basePath + "/delete-employee",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({employeeIds: ids}),
@@ -72,7 +72,7 @@ $(document).ready(function () {
             }
 
             const isUpdate = !!employee.id;
-            const url = isUpdate ? "../update-employee" : "../add-employee";
+            const url = isUpdate ? basePath + "/update-employee" : basePath + "/add-employee";
 
             $.ajax({
                 url,
@@ -85,12 +85,10 @@ $(document).ready(function () {
                 },
                 error: (xhr) => {
                     if (xhr.status === 400) {
-                        const errors = JSON.parse(xhr.responseText);
-
                         $('.invalid-feedback').removeClass('d-block').text('');
                         $('.form-control').removeClass('is-invalid');
 
-                        Object.entries(errors).forEach(([field, message]) => {
+                        Object.entries(xhr.responseJSON.validationErrors).forEach(([field, message]) => {
                             $(`.invalid-feedback[data-field='${field}']`)
                                 .text(message)
                                 .addClass('d-block');
@@ -129,13 +127,15 @@ $(document).ready(function () {
 
 function fetchEmployees() {
     $.ajax({
-        url: "../list-employees",
-        data: {
-            pageNumber,
-            pageSize,
-            sortColumn,
-            sortDirection
-        },
+        url: basePath + "/list-employees",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            sortColumn: sortColumn,
+            sortDirection: sortDirection
+        }),
         success: renderEmployeeTable,
         error: () => alert("Failed to load employees.")
     });
@@ -176,7 +176,7 @@ function renderPagination(totalRecords) {
 
 function checkEmailExists(email, employeeId, callback) {
     $.ajax({
-        url: "../check-email",
+        url: basePath + "/check-email",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({email: email, employeeId: employeeId || null}),
