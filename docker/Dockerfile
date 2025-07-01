@@ -1,6 +1,6 @@
 # docker/Dockerfile
 
-FROM tomcat:11-jdk17-temurin
+FROM tomcat:9.0-jdk17-temurin
 
 # Remove default webapps
 RUN rm -rf /usr/local/tomcat/webapps/*
