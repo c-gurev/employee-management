@@ -3,12 +3,12 @@ package com.employee.management.dao;
 import com.employee.management.dto.EmployeeDTO;
 import com.employee.management.dto.EmployeePage;
 import com.employee.management.dto.PaginationInfo;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import oracle.jdbc.OracleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;

@@ -2,20 +2,18 @@ package com.employee.management.servlet;
 
 import com.employee.management.dao.EmployeeDAO;
 import com.employee.management.dto.EmployeeDTO;
+import com.employee.management.dto.StatusResponse;
+import com.employee.management.validation.EmployeeRecordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public abstract class EmployeeManagementServlet extends HttpServlet {
 
@@ -28,7 +26,16 @@ public abstract class EmployeeManagementServlet extends HttpServlet {
     protected EmployeeDAO employeeDAO;
 
     @Inject
-    protected Validator validator;
+    private EmployeeRecordValidator validationService;
+
+    protected boolean isInputInvalid(EmployeeDTO employee, HttpServletResponse response) throws IOException {
+        Map<String, String> validationErrors = validationService.getValidationErrors(employee);
+        if (!validationErrors.isEmpty()) {
+            writeErrorResponse(response, validationErrors);
+            return true;
+        }
+        return false;
+    }
 
     protected void writeResponseData(String status, String message, PrintWriter writer) {
         try {
@@ -46,25 +53,9 @@ public abstract class EmployeeManagementServlet extends HttpServlet {
         }
     }
 
-    protected boolean isInputInvalid(EmployeeDTO employee, HttpServletResponse response) throws IOException {
-        Set<ConstraintViolation<EmployeeDTO>> violations =
-                validator.validate(employee);
-        if (!violations.isEmpty()) {
-            writeValidationErrors(response, violations);
-            return true;
-        }
-        return false;
-    }
-
-    private void writeValidationErrors(HttpServletResponse response, Set<ConstraintViolation<EmployeeDTO>> violations) throws IOException {
+    private void writeErrorResponse(HttpServletResponse response, Map<String, String> validationErrors) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-        var errors = violations.stream().collect(
-                Collectors.toMap(
-                        violation -> violation.getPropertyPath().toString(),
-                        ConstraintViolation::getMessage
-                )
-        );
-        mapper.writeValue(response.getWriter(), errors);
+        StatusResponse statusResponse = new StatusResponse("validation_error", "Input validation failed", validationErrors);
+        mapper.writeValue(response.getWriter(), statusResponse);
     }
 }
