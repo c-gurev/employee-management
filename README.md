@@ -46,3 +46,5 @@ cd docker
 2. Access the app in your browser at:
 
       http://localhost:8080
+
+     Switch between implementations with the links at the top-right (**Servlet/jQuery** and **DWR**)
